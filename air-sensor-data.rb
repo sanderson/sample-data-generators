@@ -1,6 +1,7 @@
 #! /usr/bin/ruby
 require "optparse"
 require "net/http"
+require"openssl"
 require "uri"
 
 # CLI Options
@@ -31,7 +32,7 @@ OptionParser.new do |opt|
   end
 
   opt.on("-p","--port port","Your InfluxDB port. Defaults to '9999'") do |port|
-    options[:bucket] = bucket
+    options[:port] = port
   end
 
   opt.on("-i","--interval interval",Integer,"The interval (in seconds) at which to write data. Defaults to '5'.") do |interval|
@@ -99,13 +100,14 @@ def line_protocol_batch(point_data=[])
 end
 
 def send_data(batch)
-  uri = URI.parse("#{$protocol}://#{$host}:#{$port}/api/v2/write?org=#{$org}&bucket=#{$bucket}")
+  uri = URI.parse("#{$protocol}://#{$host}:#{$port}/api/v2/write?org=#{URI::encode($org)}&bucket=#{URI::encode($bucket)}")
   request = Net::HTTP::Post.new(uri)
   request["Authorization"] = "Token #{$token}"
   request.body = "#{batch}"
 
   req_options = {
     use_ssl: uri.scheme == "https",
+    ssl_version: :SSLv23
   }
 
   response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
@@ -122,6 +124,7 @@ end
 
 begin
   puts "Sending data to #{$protocol}://#{$host}:#{$port}..."
+  puts "  (ctrl-c to kill the data stream)"
   send_batches(seeds)
 rescue Interrupt
   puts "\nStopping data stream..."
