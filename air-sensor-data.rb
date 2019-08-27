@@ -8,30 +8,22 @@ require "uri"
 options = {
   protocol: "http",
   host: "localhost",
-  port: "9999",
+  port: "8086",
   interval: 5
 }
 
 OptionParser.new do |opt|
   opt.banner = "Usage: air-sensor-data.rb [OPTIONS]"
 
-  opt.on("-o","--org ORG","The organization to write data to. REQUIRED.") do |org|
-    options[:org] = org
-  end
-
-  opt.on("-b","--bucket BUCKET","The bucket to write data to. REQUIRED.") do |bucket|
-    options[:bucket] = bucket
-  end
-
-  opt.on("-t","--token TOKEN","Your InfluxDB authentication token. REQUIRED.") do |token|
-    options[:token] = token
+  opt.on("-d","--database DATABASE","The database to write data to. REQUIRED.") do |database|
+    options[:database] = database
   end
 
   opt.on("-h","--host host","Your InfluxDB host. Defaults to 'localhost'") do |host|
     options[:host] = host
   end
 
-  opt.on("-p","--port port","Your InfluxDB port. Defaults to '9999'") do |port|
+  opt.on("-p","--port port","Your InfluxDB port. Defaults to '8086'") do |port|
     options[:port] = port
   end
 
@@ -49,8 +41,8 @@ OptionParser.new do |opt|
   end
 end.parse!
 
-unless options[:org] && options[:bucket] && options[:token]
-  $stderr.puts "\nError: you must specify an organization, bucket, and token.\nUse the '--help' flag for more info.\n\n"
+unless options[:database]
+  $stderr.puts "\nError: you must specify a database. Use the '--help' flag for more info.\n\n"
   exit 1
 end
 
@@ -58,9 +50,7 @@ end
 $protocol = options[:protocol]
 $host     = options[:host]
 $port     = options[:port]
-$org      = options[:org]
-$bucket   = options[:bucket]
-$token    = options[:token]
+$database = options[:database]
 $interval = options[:interval]
 
 # Seed Data
@@ -100,9 +90,8 @@ def line_protocol_batch(point_data=[])
 end
 
 def send_data(batch)
-  uri = URI.parse("#{$protocol}://#{$host}:#{$port}/api/v2/write?org=#{URI::encode($org)}&bucket=#{URI::encode($bucket)}")
+  uri = URI.parse("#{$protocol}://#{$host}:#{$port}/write?db=#{URI::encode($database)}")
   request = Net::HTTP::Post.new(uri)
-  request["Authorization"] = "Token #{$token}"
   request.body = "#{batch}"
 
   req_options = {
