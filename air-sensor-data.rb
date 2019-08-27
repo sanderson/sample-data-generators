@@ -50,7 +50,7 @@ OptionParser.new do |opt|
 end.parse!
 
 unless options[:org] && options[:bucket] && options[:token]
-  $stderr.puts "\nError: you must specify an organization, bucket, and token.\n\n"
+  $stderr.puts "\nError: you must specify an organization, bucket, and token.\nUse the '--help' flag for more info.\n\n"
   exit 1
 end
 
@@ -65,14 +65,14 @@ $interval = options[:interval]
 
 # Seed Data
 seeds = [
-  {id: 100, t: 71.2, h: 35.1, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 101, t: 71.8, h: 34.9, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 102, t: 72.0, h: 34.9, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 103, t: 71.3, h: 35.2, c: 0.4, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 200, t: 73.6, h: 35.8, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.2},
-  {id: 201, t: 74.0, h: 35.2, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 202, t: 75.3, h: 35.7, c: 0.5, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
-  {id: 203, t: 74.8, h: 35.9, c: 0.4, t_inc: -0.5..0.5, h_inc: -0.5..0.5, c_inc: -0.1..0.1},
+  {id: 100, t: 71.2, h: 35.1, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 101, t: 71.8, h: 34.9, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 102, t: 72.0, h: 34.9, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 103, t: 71.3, h: 35.2, c: 0.4, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 200, t: 73.6, h: 35.8, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.05},
+  {id: 201, t: 74.0, h: 35.2, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 202, t: 75.3, h: 35.7, c: 0.5, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
+  {id: 203, t: 74.8, h: 35.9, c: 0.4, t_inc: -0.05..0.05, h_inc: -0.05..0.05, c_inc: -0.02..0.02},
 ]
 
 def increment_data(data={})
